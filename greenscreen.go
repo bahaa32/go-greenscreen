@@ -12,12 +12,11 @@ import (
 
 func main() {
 	// Get user inputs
-	// channel := readLine("Enter color channel\n")
-	// chanDiff, err := strconv.ParseFloat(readLine("Enter color channel difference\n"), 64)
-	// gsFile := readLine("Enter greenscreen image file name\n")
-	// fiFile := readLine("Enter fill image file name\n")
-	// outFile := readLine("Enter output file name\n")
-	channel, chanDiff, gsFile, fiFile, outFile := "g", 1.5, "lion2x.ppm", "city2x.ppm", "test4.ppm"
+	channel := readLine("Enter color channel\n")
+	chanDiff, err := strconv.ParseFloat(readLine("Enter color channel difference\n"), 64)
+	gsFile := readLine("Enter greenscreen image file name\n")
+	fiFile := readLine("Enter fill image file name\n")
+	outFile := readLine("Enter output file name\n")
 
 	// Validate user input
 	if !strings.Contains("rgb", channel) {
@@ -102,6 +101,7 @@ func getImageDimensions(reader *bufio.Reader) string {
 		if err != io.EOF && err != nil {
 			break
 		}
+		// Set dimensions to value of second line
 		if i == 1 {
 			dimensions = line
 		}
@@ -110,20 +110,14 @@ func getImageDimensions(reader *bufio.Reader) string {
 }
 
 func loadImagePixels(reader *bufio.Reader) (image [][][3]int) {
-	// send := make(chan string)
-	// receive := make(chan []int)
-	// go getSubpixels(send, receive)
 	for {
 		line, err := reader.ReadString('\n')
 		if err != io.EOF && err != nil {
 			break
 		}
-		// send <- line
 		subRow := getSubpixels(line)
 		rgbRow := make([][3]int, 0, len(subRow)/3)
-		// fmt.Println(len(subRow))
 		for i := 0; i < len(subRow); i += 3 {
-			// fmt.Println(i)
 			rgbRow = append(rgbRow, [3]int{subRow[i], subRow[i+1], subRow[i+2]})
 		}
 		if len(rgbRow) != 0 {
@@ -133,39 +127,32 @@ func loadImagePixels(reader *bufio.Reader) (image [][][3]int) {
 			break
 		}
 	}
-	// close(send)
 	return
 }
 
 func getSubpixels(text string) []int {
 	var subpixel int
 	row := make([]int, 0, len(text)/3)
-	// for text := range textCh {
-		for i := 0; i < len(text); i++ {
-			char := text[i]
-			if !(char >= 48 && char <= 58) && char != 32 {
-				continue
-			}
-			if char != 32 {
-				subpixel = subpixel*10 + (int(char) - 48)
-				} else {
-					row = append(row, subpixel)
-					subpixel = 0
-				}
-			}
-			// resultCh <- line
-			// line = line[:0]
-			// }
-			// close(resultCh)
-			return row
+	for char := range text {
+		if !(char >= 48 && char <= 58) && char != 32 {
+			continue
 		}
+		if char != 32 {
+			subpixel = subpixel*10 + (int(char) - 48)
+			} else {
+				row = append(row, subpixel)
+				subpixel = 0
+			}
+		}
+	return row
+}
 		
-		// Name inspired by Nim's readLine() and Python's input()
-		func readLine(text string) string {
-			fmt.Print(text)
-			scanner := bufio.NewScanner(os.Stdin)
-			if scanner.Scan() {
-				return scanner.Text()
-			}
-			return ""
-		}
+// Name inspired by Nim's readLine() and Python's input()
+func readLine(text string) string {
+	fmt.Print(text)
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		return scanner.Text()
+	}
+	return ""
+}
