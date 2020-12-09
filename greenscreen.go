@@ -139,14 +139,14 @@ func getSubpixels(text string) []int {
 		}
 		if char != 32 {
 			subpixel = subpixel*10 + (int(char) - 48)
-			} else {
-				row = append(row, subpixel)
-				subpixel = 0
-			}
+		} else {
+			row = append(row, subpixel)
+			subpixel = 0
 		}
+	}
 	return row
 }
-		
+
 // Name inspired by Nim's readLine() and Python's input()
 func readLine(text string) string {
 	fmt.Print(text)
